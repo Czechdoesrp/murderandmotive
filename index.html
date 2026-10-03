@@ -115,6 +115,10 @@ th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);white
 th{color:var(--muted);font-weight:400}
 .field.wide{width:17em;max-width:100%;text-transform:none}
 section.desk ul{padding-left:20px}
+.announce{margin:16px 0 0;padding:12px 14px;border-left:8px solid #c9a227;background:var(--card);font-weight:700}
+.notice{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;z-index:9;border:2px solid var(--blood);border-left-width:8px;box-shadow:0 6px 24px #000;cursor:pointer}
+.notice small{font-weight:400;color:var(--muted)}
+.wrap{padding-bottom:150px}
 </style>
 </head>
 <body>
@@ -237,11 +241,15 @@ const rank=()=>{let n=0;RANKS.forEach((x,i)=>{if(stats.xp>=x[1])n=i});return n};
 const code=s=>s.toString(36).toUpperCase();
 const killer=()=>C.suspects.find(s=>s.killer);
 const dead=()=>P.vs.length;
-const maxHours=()=>8+(rank()>=1?1:0)+(rank()>=4?1:0)-(P.panic>=60?1:0)-(P.panic>=80?1:0);
+const DIFF=[{n:"Standard",h:0,max:6,panic:25,need:3,xp:1,one:false,d:"8 hours a day, 6 deaths ends the case."},{n:"Hard",h:-1,max:5,panic:40,need:4,xp:1.5,one:false,d:"7 hours a day, 5 deaths ends the case, panic starts at 40%, warrants need 4 points. 1.5x reputation."},{n:"Nightmare",h:-2,max:4,panic:55,need:5,xp:2,one:true,d:"6 hours a day, 4 deaths ends the case, panic starts at 55%, warrants need 5 points, alibis are checked one murder at a time. 2x reputation."}];
+const D=()=>DIFF[(P&&P.diff)||0];
+let nextDiff=store.get("mm_diff",0);if(!DIFF[nextDiff])nextDiff=0;
+const maxHours=()=>8+D().h+(rank()>=1?1:0)+(rank()>=4?1:0)-(P.panic>=60?1:0)-(P.panic>=80?1:0);
 function newSeed(){let s;const a=new Uint32Array(1);do{crypto.getRandomValues(a);s=a[0]}while(stats.seeds.includes(s));return s}
-function startCase(seed){if(!stats.seeds.includes(seed)){stats.seeds.push(seed);if(stats.seeds.length>5000)stats.seeds.shift();store.set("nta_stats",stats)}
+function startCase(seed,diff){if(!stats.seeds.includes(seed)){stats.seeds.push(seed);if(stats.seeds.length>5000)stats.seeds.shift();store.set("nta_stats",stats)}
   C=generate(seed);P={day:1,hours:8,vs:[0,1],nxt:2,saved:[],panic:25,done:{},clues:[],letters:[],tags:{},dug:{},alibi:{},talked:{},sus:{},watched:{},searched:{},stake:null,patrol:null,press:0,profile:false,over:null,tab:"victims",confirm:null,notice:""};
-  P.hours=maxHours();save();render();window.scrollTo(0,0)}
+  let df=diff===undefined?nextDiff:diff;if(typeof NET!=="undefined"&&NET.cfg&&NET.cfg.weeklyCode===code(seed)&&NET.cfg.weeklyDiff>=0)df=NET.cfg.weeklyDiff;
+  P.diff=DIFF[df]?df:0;P.panic=D().panic;P.hours=maxHours();save();render();window.scrollTo(0,0)}
 function save(){store.set("nta2_game",{seed:C.seed,P})}
 
 /* ---------- actions ---------- */
@@ -260,12 +268,13 @@ const A={
   autopsy(i){if(spend(cost("autopsy"))){P.done["a"+i]=1;addClue(C.victims[i].autopsy,i);P.notice="Autopsy report added to the case file."}},
   witness(i){if(spend(cost("witness"))){P.done["w"+i]=1;addClue(C.victims[i].witness,i);P.notice="You found a witness. Their statement is in the case file. Witnesses are sometimes wrong."}},
   dig(i){if(spend(cost("dig"))){P.dug[i]=1;P.notice="Background check complete on "+C.suspects[i].name+"."}},
-  alibi(i){if(spend(cost("alibi"))){P.alibi[i]=dead();const s=C.suspects[i];P.notice=P.vs.some(v=>s.alibi[v])?s.name+" has a verified alibi.":s.name+" has no alibi anyone can verify."}},
+  alibi(i){if(spend(cost("alibi"))){P.alibi[i]=D().one?Math.min(dead(),(P.alibi[i]||0)+1):dead();const s=C.suspects[i];P.notice=P.vs.slice(0,P.alibi[i]).some(v=>s.alibi[v])?s.name+" has a verified alibi.":s.name+" has no alibi anyone can verify."}},
   talk(i){if(spend(cost("talk"))){P.talked[i]=1;P.notice="Interview with "+C.suspects[i].name+" is on their card."}},
   stake(i){if(P.stake===i){P.stake=null;P.hours+=cost("stake");return}if(P.stake!==null){P.notice="You can only watch one suspect a night. Cancel the other stakeout first.";return}if(spend(cost("stake"))){P.stake=i;P.notice="You will sit on "+C.suspects[i].name+" tonight."}},
   patrol(d){if(P.patrol===d){P.patrol=null;P.hours+=cost("patrol");return}if(P.patrol){P.patrol=d;return}if(spend(cost("patrol"))){P.patrol=d;P.notice="Extra patrols will cover "+d+" tonight."}},
-  warrant(i){const s=C.suspects[i],c=cause(i),need=rank()>=3?2:3;
-    if(c.bad||c.m<need){if(spend(1)){P.searched[i]="denied";P.notice=c.bad?`The judge refused. Evidence you already hold rules ${s.name} out on at least one point.`:`The judge refused. You have ${c.m} point${c.m===1?"":"s"} of probable cause against ${s.name} and need ${need}.`}return}
+  warrant(i){const s=C.suspects[i],c=cause(i),need=D().need-(rank()>=3?1:0);
+    if(c.bad||c.m<need){if(spend(1)){P.searched[i]="denied";P.wmsg=P.wmsg||{};P.wmsg[i]=P.notice=c.bad?`The judge refused. Evidence you already hold rules ${s.name} out on at least one point.`:`The judge refused. You have ${c.m} point${c.m===1?"":"s"} of probable cause against ${s.name} and need ${need}.`}return}
+    if(P.hours<cost("warrant")){P.notice=`The judge will sign a warrant for ${s.name}, but the search takes ${cost("warrant")} hours and you only have ${P.hours} left today. Request it again tomorrow with a full day.`;return}
     if(spend(cost("warrant"))){if(s.killer){P.searched[i]="found";P.notice=`Warrant granted. Behind a false panel in ${s.name}'s home you found keepsakes from every victim and the materials for the mark left at each scene.`}
       else{P.searched[i]="clean";panic(8);P.notice=`Warrant granted. You tore ${s.name}'s home apart and found nothing. The papers have the story.`}}},
   profile(){if(spend(cost("profile"))){P.profile=true;const t=TYPES[C.mo.type];
@@ -277,6 +286,8 @@ const A={
   tag(i){P.tags[i]=({undefined:"sus",sus:"clr",clr:undefined})[P.tags[i]]},
   arrest(i){if(P.confirm!==i){P.confirm=i;return}finish(C.suspects[i].killer?"win":"wrong",i)},
   cancel(){P.confirm=null},
+  dismiss(){P.notice=""},
+  setDiff(n){nextDiff=n;store.set("mm_diff",n)},
   endDay(){
     P.day++;P.confirm=null;const n=[],st=P.stake,pa=P.patrol;P.stake=P.patrol=null;
     if(P.nxt<C.victims.length&&P.day>=C.strike[P.nxt]){
@@ -287,7 +298,7 @@ const A={
       else{P.vs.push(vi);panic(18);n.push(`${C.mo.moniker} has killed again. ${v.name} was found ${v.loc} in ${v.district}.`);
         if(pa)n.push(`Your patrols were in ${pa}.`);
         if(st!==null){P.watched[st]=v.name;n.push(`${C.suspects[st].name} was under your eyes all night and did not do this.`)}
-        if(dead()>=6){finish("six");return}}
+        if(dead()>=D().max){finish("six");return}}
       P.tab="victims";
     }else{
       if(st!==null){const s=C.suspects[st];
@@ -301,7 +312,7 @@ const A={
     P.notice=n.join(" ");
   },
   copy(){const t=code(C.seed);try{navigator.clipboard.writeText(t)}catch(e){}P.notice="Case code "+t+" copied. Anyone who enters it gets this exact killer."},
-  copyResult(){const o=P.over,w=o.how==="win"||o.how==="act";const t=`Murder & Motive, case ${code(C.seed)}: ${w?"caught":"lost to"} ${C.mo.moniker} on day ${P.day} with ${dead()} dead${P.saved.length?" and "+P.saved.length+" saved":""}. Enter the code to try the same killer.`;try{navigator.clipboard.writeText(t)}catch(e){}P.copied=t},
+  copyResult(){const o=P.over,w=o.how==="win"||o.how==="act";const t=`Murder & Motive, case ${code(C.seed)} (${D().n}): ${w?"caught":"lost to"} ${C.mo.moniker} on day ${P.day} with ${dead()} dead${P.saved.length?" and "+P.saved.length+" saved":""}. Enter the code to try the same killer.`;try{navigator.clipboard.writeText(t)}catch(e){}P.copied=t},
   playCode(){const v=document.getElementById("code").value.trim(),s=parseInt(v,36);
     if(!/^[0-9a-z]{1,7}$/i.test(v)||isNaN(s)||s>4294967295){P.notice="That is not a valid case code.";return}startCase(s);return true},
   newCase(){startCase(newSeed());return true}
@@ -309,7 +320,7 @@ const A={
 
 /* ---------- shared leaderboard + admin (Firebase) ---------- */
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const F={name:store.get("mm_name",""),email:"",pass:"",wcode:"",wtitle:"",wends:"",banner:"",pcode:""};
+const F={name:store.get("mm_name",""),email:"",pass:"",wcode:"",wtitle:"",wends:"",banner:"",pcode:"",wdiff:-1};
 const NET={on:!!FIREBASE_CONFIG,ready:false,admin:false,cfg:{},scores:[],board:"",bans:[],msg:"",dirty:false};
 const nameKey=n=>String(n).toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,24);
 const validCode=v=>/^[0-9a-z]{1,7}$/i.test(v)&&parseInt(v,36)<=4294967295;
@@ -323,14 +334,14 @@ async function initNet(){
     const [a,f,au]=await Promise.all([import(v+"firebase-app.js"),import(v+"firebase-firestore.js"),import(v+"firebase-auth.js")]);
     const app=a.initializeApp(FIREBASE_CONFIG);NET.f=f;NET.au=au;NET.db=f.getFirestore(app);NET.auth=au.getAuth(app);NET.ready=true;
     au.onAuthStateChanged(NET.auth,u=>{NET.admin=!!(u&&u.email&&u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase());
-      if(NET.admin){const g=NET.cfg;F.wcode=F.wcode||g.weeklyCode||"";F.wtitle=F.wtitle||g.weeklyTitle||"";F.wends=F.wends||g.weeklyEnds||"";F.banner=F.banner||g.banner||"";loadBans()}softRender()});
+      if(NET.admin){const g=NET.cfg;F.wcode=F.wcode||g.weeklyCode||"";F.wtitle=F.wtitle||g.weeklyTitle||"";F.wends=F.wends||g.weeklyEnds||"";F.banner=F.banner||g.banner||"";F.wdiff=g.weeklyDiff>=0?g.weeklyDiff:-1;loadBans()}softRender()});
     f.onSnapshot(f.doc(NET.db,"config","main"),s=>{NET.cfg=s.exists()?s.data():{};if(!NET.board)loadBoard(NET.cfg.weeklyCode||code(C.seed));else softRender()},()=>{NET.msg="Could not reach the leaderboard.";softRender()});
   }catch(e){NET.msg="Could not reach the leaderboard.";softRender()}
 }
 async function loadBoard(c){
   NET.board=String(c||"");NET.scores=[];if(!NET.ready||!NET.board){softRender();return}
   try{const f=NET.f,s=await f.getDocs(f.query(f.collection(NET.db,"scores"),f.where("code","==",NET.board)));
-    NET.scores=s.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>(b.won-a.won)||(a.dead-b.dead)||(b.saved-a.saved)||(a.day-b.day)||(a.ts-b.ts));NET.msg=""}
+    NET.scores=s.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>(b.won-a.won)||((b.diff||0)-(a.diff||0))||(a.dead-b.dead)||(b.saved-a.saved)||(a.day-b.day)||(a.ts-b.ts));NET.msg=""}
   catch(e){NET.msg="Could not load the standings."}
   softRender()}
 async function loadBans(){try{const f=NET.f,s=await f.getDocs(f.collection(NET.db,"bans"));NET.bans=s.docs.map(d=>d.id)}catch(e){}softRender()}
@@ -352,32 +363,33 @@ Object.assign(A,{
     NET.au.signInWithEmailAndPassword(NET.auth,F.email.trim(),F.pass).then(u=>{F.pass="";const ok=u.user.email.toLowerCase()===ADMIN_EMAIL.toLowerCase();P.notice=ok?"Signed in as admin.":"Signed in, but this account is not the admin.";if(ok)P.tab="admin";render()}).catch(()=>{P.notice="Sign-in failed. Check the email and password.";render()});return true},
   signOut(){NET.au.signOut(NET.auth);NET.admin=false;P.tab="desk"},
   randCode(){F.wcode=code(newSeed())},
+  wdiff(n){F.wdiff=n},
   preview(){},
   saveWeek(){if(!validCode(F.wcode.trim())){P.notice="Enter a valid case code first.";return}
     const c=code(parseInt(F.wcode.trim(),36));F.wcode=c;
-    adminDo(f=>f.setDoc(cfgDoc(f),{weeklyCode:c,weeklyTitle:F.wtitle.trim().slice(0,60),weeklyEnds:F.wends.trim().slice(0,40)},{merge:true}).then(()=>loadBoard(c)),"Case of the Week is live.");return true},
+    adminDo(f=>f.setDoc(cfgDoc(f),{weeklyCode:c,weeklyTitle:F.wtitle.trim().slice(0,60),weeklyEnds:F.wends.trim().slice(0,40),weeklyDiff:F.wdiff},{merge:true}).then(()=>loadBoard(c)),"Case of the Week is live.");return true},
   archiveWeek(){const g=NET.cfg;if(!g.weeklyCode){P.notice="There is no weekly case to close.";return}
     const top=NET.board===g.weeklyCode&&NET.scores[0]?NET.scores[0].name:"";
     const history=[{code:g.weeklyCode,title:g.weeklyTitle||"",winner:top}].concat(g.history||[]).slice(0,30);
-    adminDo(f=>f.setDoc(cfgDoc(f),{history,weeklyCode:"",weeklyTitle:"",weeklyEnds:""},{merge:true}),"Week closed and filed under past weeks.");F.wcode=F.wtitle=F.wends="";return true},
+    adminDo(f=>f.setDoc(cfgDoc(f),{history,weeklyCode:"",weeklyTitle:"",weeklyEnds:"",weeklyDiff:-1},{merge:true}),"Week closed and filed under past weeks.");F.wcode=F.wtitle=F.wends="";return true},
   saveBanner(){adminDo(f=>f.setDoc(cfgDoc(f),{banner:F.banner.trim().slice(0,200)},{merge:true}),F.banner.trim()?"Announcement posted.":"Announcement cleared.");return true},
   clearBanner(){F.banner="";return A.saveBanner()},
   delScore(id){adminDo(f=>f.deleteDoc(f.doc(NET.db,"scores",String(id))).then(()=>loadBoard(NET.board)),"Result deleted.");return true},
   ban(k){k=String(k);adminDo(async f=>{await f.setDoc(f.doc(NET.db,"bans",k),{at:Date.now()});for(const s of NET.scores.filter(s=>s.nameKey===k))await f.deleteDoc(f.doc(NET.db,"scores",s.id));await loadBans();await loadBoard(NET.board)},"Name blocked and its results on this case removed.");return true},
   unban(k){adminDo(f=>f.deleteDoc(f.doc(NET.db,"bans",String(k))).then(loadBans),"Name unblocked.");return true},
-  exportBoard(){const t=NET.scores.map((s,i)=>`${i+1}. ${s.name}, ${s.won?"caught":"lost"}, day ${s.day}, ${s.dead} dead, ${s.saved} saved, ${(RANKS[s.rank]||RANKS[0])[0]}`).join("\n");try{navigator.clipboard.writeText(t)}catch(e){}P.notice="Standings copied. Paste them into Discord."}
+  exportBoard(){const t=NET.scores.map((s,i)=>`${i+1}. ${s.name}, ${s.won?"caught":"lost"}, ${(DIFF[s.diff]||DIFF[0]).n}, day ${s.day}, ${s.dead} dead, ${s.saved} saved, ${(RANKS[s.rank]||RANKS[0])[0]}`).join("\n");try{navigator.clipboard.writeText(t)}catch(e){}P.notice="Standings copied. Paste them into Discord."}
 });
 function scoreTable(adm){
   if(NET.msg)return `<p class="empty">${NET.msg}</p>`;
   if(!NET.scores.length)return `<p class="empty">No results posted for this case yet.</p>`;
-  return `<div class="scroll"><table><thead><tr><th>#</th><th>Detective</th><th>Result</th><th>Day</th><th>Dead</th><th>Saved</th><th>Rank</th>${adm?"<th>Moderate</th>":""}</tr></thead><tbody>${NET.scores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}${adm&&s.won&&s.day<=2?` <span class="bad">(very fast, check)</span>`:""}</td><td class="${s.won?"good":"bad"}">${s.won?"Caught":"Lost"}</td><td>${+s.day}</td><td>${+s.dead}</td><td>${+s.saved}</td><td>${esc((RANKS[s.rank]||RANKS[0])[0])}</td>${adm?`<td><button class="btn" data-a="delScore" data-i="${esc(s.id)}">Delete</button> <button class="btn red" data-a="ban" data-i="${esc(s.nameKey)}">Block name</button></td>`:""}</tr>`).join("")}</tbody></table></div>`}
+  return `<div class="scroll"><table><thead><tr><th>#</th><th>Detective</th><th>Result</th><th>Difficulty</th><th>Day</th><th>Dead</th><th>Saved</th><th>Rank</th>${adm?"<th>Moderate</th>":""}</tr></thead><tbody>${NET.scores.map((s,i)=>`<tr><td>${i+1}</td><td>${esc(s.name)}${adm&&s.won&&s.day<=2?` <span class="bad">(very fast, check)</span>`:""}</td><td class="${s.won?"good":"bad"}">${s.won?"Caught":"Lost"}</td><td>${(DIFF[s.diff]||DIFF[0]).n}</td><td>${+s.day}</td><td>${+s.dead}</td><td>${+s.saved}</td><td>${esc((RANKS[s.rank]||RANKS[0])[0])}</td>${adm?`<td><button class="btn" data-a="delScore" data-i="${esc(s.id)}">Delete</button> <button class="btn red" data-a="ban" data-i="${esc(s.nameKey)}">Block name</button></td>`:""}</tr>`).join("")}</tbody></table></div>`}
 function boardPicker(){const g=NET.cfg,w=g.weeklyCode,mine=code(C.seed);
   return `<div class="acts" style="margin:0 0 10px">${w?btn("board",w,"This week",0,NET.board===w?"on":""):""}${btn("board",mine,"My current case",0,NET.board===mine?"on":"")}${(g.history||[]).slice(0,8).filter(h=>validCode(h.code)).map(h=>btn("board",esc(h.code),esc(h.title||h.code),0,NET.board===h.code?"on":"")).join("")}</div>`}
 function boardTab(){
   if(!NET.on)return `<p class="empty">The shared leaderboard is not connected on this copy of the game. Your progress still saves on this device.</p>`;
   if(!NET.ready)return `<p class="empty">${NET.msg||"Connecting to the leaderboard..."}</p>`;
   const g=NET.cfg,w=g.weeklyCode,mine=code(C.seed);
-  return `<section class="desk"><h2>Case of the Week</h2>${w?`<p><b>${esc(g.weeklyTitle||"This week's killer")}</b>. Code <b>${esc(w)}</b>.${g.weeklyEnds?` Closes ${esc(g.weeklyEnds)}.`:""}</p>
+  return `<section class="desk"><h2>Case of the Week</h2>${w?`<p><b>${esc(g.weeklyTitle||"This week's killer")}</b>. Code <b>${esc(w)}</b>.${g.weeklyEnds?` Closes ${esc(g.weeklyEnds)}.`:""} ${g.weeklyDiff>=0&&DIFF[g.weeklyDiff]?`Everyone plays on ${DIFF[g.weeklyDiff].n}.`:"Any difficulty. Harder difficulties rank higher."}</p>
   <p>${stats.done.includes(w)?`<span class="sub">You have finished this case. Only your first attempt counts.</span>`:mine===w?`<span class="good">You are working this case now.</span>`:btn("playWeekly","","Play this week's case")}</p>`:`<p class="empty">No weekly case has been posted yet.</p>`}</section>
   <section class="desk"><h2>Your name</h2><p><input class="field wide" data-f="name" maxlength="24" value="${esc(F.name)}" placeholder="Discord name" aria-label="Discord name"> ${btn("saveName","","Save")}</p><p class="sub">Your result posts under this name when a case ends. Only your first attempt at each case counts.</p></section>
   <section class="desk" style="max-width:none"><h2>Standings, case ${esc(NET.board)}</h2>${boardPicker()}${scoreTable(false)}
@@ -392,6 +404,7 @@ function adminTab(){
   return `<section class="desk"><h2>Case of the Week</h2>
   <p><input class="field" data-f="wcode" maxlength="7" value="${esc(F.wcode)}" placeholder="Case code" aria-label="Weekly case code"> ${btn("randCode","","Random code")} ${btn("preview","","Preview")}</p>${prev}
   <p><input class="field wide" data-f="wtitle" maxlength="60" value="${esc(F.wtitle)}" placeholder="Title, e.g. Week 3" aria-label="Weekly title"> <input class="field wide" data-f="wends" maxlength="40" value="${esc(F.wends)}" placeholder="Closes, e.g. Sunday 9pm CT" aria-label="Closing time"></p>
+  <p style="margin-bottom:4px">Difficulty for this week:</p><div class="acts" style="margin:0 0 10px">${btn("wdiff",-1,"Player's choice",0,F.wdiff===-1?"on":"")}${DIFF.map((x,i)=>btn("wdiff",i,x.n+" only",0,F.wdiff===i?"on":"")).join("")}</div>
   <div class="acts">${btn("saveWeek","","Post as Case of the Week")}${btn("archiveWeek","","Close the current week",0,"red")}</div>
   <p class="sub">Closing a week files it under past weeks with whoever is top of its standings as the winner. Open "This week" below first so the winner is recorded.</p></section>
   <section class="desk"><h2>Announcement</h2><p><input class="field wide" style="width:100%" data-f="banner" maxlength="200" value="${esc(F.banner)}" placeholder="Shown at the top of the game for everyone" aria-label="Announcement"></p><div class="acts">${btn("saveBanner","","Post announcement")}${btn("clearBanner","","Clear it")}</div></section>
@@ -409,13 +422,13 @@ function adminLogin(){
 
 function finish(how,i){
   P.over={how,i};const w=how==="win"||how==="act",k=killer();
-  const xp=w?100+(6-dead())*20+(how==="act"?50:0)+P.saved.length*30:10;P.over.xp=xp;
+  const xp=w?Math.round((100+(D().max-dead())*20+(how==="act"?50:0)+P.saved.length*30)*D().xp):10;P.over.xp=xp;
   if(w)stats.solved++;else stats.lost++;stats.xp+=xp;
-  stats.archive.unshift({code:code(C.seed),moniker:C.mo.moniker,name:k.name,city:C.city,type:TYPES[C.mo.type].label,won:w,day:P.day,dead:dead(),saved:P.saved.length});
+  stats.archive.unshift({code:code(C.seed),moniker:C.mo.moniker,name:k.name,city:C.city,type:TYPES[C.mo.type].label,won:w,day:P.day,dead:dead(),saved:P.saved.length,diff:D().n});
   if(stats.archive.length>200)stats.archive.pop();
   const cd=code(C.seed),first=!stats.done.includes(cd);if(first){stats.done.push(cd);if(stats.done.length>2000)stats.done.shift()}
   store.set("nta_stats",stats);
-  if(NET.on){if(first)submitScore({code:cd,won:w,day:P.day,dead:dead(),saved:P.saved.length,rank:rank()});else P.over.sub="Replays are not posted. Only your first attempt at a case counts."}}
+  if(NET.on){if(first)submitScore({code:cd,won:w,day:P.day,dead:dead(),saved:P.saved.length,rank:rank(),diff:P.diff||0});else P.over.sub="Replays are not posted. Only your first attempt at a case counts."}}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(!b||b.disabled)return;const arg=b.dataset.i;const stop=A[b.dataset.a](arg===undefined?undefined:arg===""||isNaN(arg)?arg:+arg);if(stop)return;save();render();if(b.dataset.a==="endDay"||P.over)window.scrollTo(0,0)});
 
 /* ---------- rendering ---------- */
@@ -426,8 +439,8 @@ const dayLabel=d=>d>=1?`day ${d}`:`${1-d} day${1-d===1?"":"s"} before day 1`;
 
 function header(){
   const mh=Math.max(maxHours(),P.hours),pips=Array.from({length:mh},(_,i)=>`<i class="${i<P.hours?"":"off"}"></i>`).join("");
-  return `<header><div class="hd"><div><h1>Murder &amp; Motive</h1><div class="case">${C.city} Police, case ${code(C.seed)}</div></div>
-  <div class="meter"><span>Day <b>${P.day}</b></span><span aria-label="${P.hours} hours left today">Hours <span class="pips">${pips}</span></span><span>Dead <b>${dead()}</b> of 6</span><span>Panic <b>${P.panic}%</b></span>
+  return `<header><div class="hd"><div><h1>Murder &amp; Motive</h1><div class="case">${C.city} Police, case ${code(C.seed)}, ${D().n}</div></div>
+  <div class="meter"><span>Day <b>${P.day}</b></span><span aria-label="${P.hours} hours left today">Hours <span class="pips">${pips}</span></span><span>Dead <b>${dead()}</b> of ${D().max}</span><span>Panic <b>${P.panic}%</b></span>
   ${P.over?"":`<button class="btn dark" data-a="endDay">End the day</button>`}</div></div></header>`;
 }
 function victimsTab(){
@@ -440,8 +453,8 @@ function victimsTab(){
   <li>Letters: a real one quotes the held-back detail correctly. Cranks get it wrong, so ignore what their letters tell you.</li>
   <li>Stakeout: watch one suspect overnight. If the killer strikes while you watch someone else, that person is cleared. If you are watching the killer, you catch them in the act.</li>
   <li>Patrols: guess the district of the next strike from the pattern of dates and places. Guess right on the right night and the victim lives.</li>
-  <li>Warrants: a judge wants three points of evidence matching a suspect and none against. Searching the killer's home finds proof.</li>
-  <li>Panic rises with every death and letter. High panic costs you hours. At 100% you are replaced. A sixth death or a wrong arrest also ends the case.</li></ul></details>
+  <li>Warrants: a judge wants ${D().need-(rank()>=3?1:0)} points of evidence matching a suspect and none against. Searching the killer's home finds proof.</li>
+  <li>Panic rises with every death and letter. High panic costs you hours. At 100% you are replaced. ${D().max} deaths or a wrong arrest also ends the case.</li></ul></details>
   <div class="cards">${all.map(([i,live])=>{const v=C.victims[i];return `<div class="card"><span class="vnum ${live?"live":""}">${live?"Survived":dayLabel(C.strike[i])}</span><h3>${v.name}</h3><div class="sub">${v.age}, ${v.occ}</div>
   <p>${live?`Attacked in <b>${v.district}</b> on day ${C.strike[i]}. Your patrols got there in time.`:`Found ${v.loc} in <b>${v.district}</b>, ${dayLabel(C.strike[i])}.`}</p>
   ${live?"":`<div class="acts">${P.done["s"+i]?"":btn("scene",i,"Process the scene",cost("scene"))}${P.done["a"+i]?"":btn("autopsy",i,"Read the autopsy",cost("autopsy"))}${P.done["w"+i]?"":btn("witness",i,"Find a witness",cost("witness"))}
@@ -458,11 +471,11 @@ function suspectsTab(){
     <p class="sub">${s.flag}</p>
     ${P.dug[i]?`<dl class="blk"><dt>Shoe size</dt><dd>${s.shoe}</dd><dt>Blood type</dt><dd>${s.blood}</dd><dt>Handed</dt><dd>${s.hand}</dd><dt>Habit</dt><dd>${s.habit}</dd><dt>Vehicle</dt><dd>${s.vehicle}</dd></dl>`:""}
     ${P.talked[i]?`<div class="blk"><b>Interview.</b> Asked about ${TL[tk.trait].toLowerCase()}, answered: ${tk.trait==="hand"?tk.claim+"-handed":tk.claim}. ${contra?`<span class="bad">Their records say otherwise. They lied to you.</span>`:P.dug[i]?"That matches their records.":"Not yet checked against records."}<br>When you described the held-back detail: ${tk.react}${tk.slip?`<br><span class="bad">They mentioned the held-back detail before you did. It was never released.</span>`:""}</div>`:""}
-    ${chk?`<div class="blk ${has?"good":""}">${has?`Verified alibi for the ${which} murder.`:`No verifiable alibi${chk<dead()?" (not checked against the latest murder)":""}.`}</div>`:""}
+    ${chk?`<div class="blk ${has?"good":""}">${has?`Verified alibi for the ${which} murder.`:`No verifiable alibi${chk<dead()?` (${chk} of ${dead()} murders checked)`:""}.`}</div>`:""}
     ${P.watched[i]?`<div class="blk good">Under your watch the night ${P.watched[i]} died. Not the killer.</div>`:""}
     ${P.sus[i]?`<div class="blk bad">Seen prowling at night during your stakeout.</div>`:""}
-    ${sr==="found"?`<div class="blk bad">Search found keepsakes from the victims.</div>`:sr==="clean"?`<div class="blk good">Home searched. Nothing found.</div>`:sr==="denied"?`<div class="blk">Last warrant request refused.</div>`:""}
-    <div class="acts">${P.dug[i]?"":btn("dig",i,"Background check",cost("dig"))}${has||chk===dead()?"":btn("alibi",i,chk?"Recheck alibi":"Check alibi",cost("alibi"))}
+    ${sr==="found"?`<div class="blk bad">Search found keepsakes from the victims.</div>`:sr==="clean"?`<div class="blk good">Home searched. Nothing found.</div>`:sr==="denied"?`<div class="blk">${(P.wmsg&&P.wmsg[i])||"Last warrant request refused."}</div>`:""}
+    <div class="acts">${P.dug[i]?"":btn("dig",i,"Background check",cost("dig"))}${has||chk===dead()?"":btn("alibi",i,chk?"Check the next murder":"Check alibi",cost("alibi"))}
     ${P.talked[i]?"":btn("talk",i,"Interview",cost("talk"))}
     ${P.stake===i?btn("stake",i,"Cancel stakeout",0,"on"):btn("stake",i,"Stake out tonight",cost("stake"))}
     ${sr==="found"||sr==="clean"?"":btn("warrant",i,"Request a search warrant",1)}
@@ -484,12 +497,12 @@ function deskTab(){
   return `<section class="desk"><h2>Your career</h2><p><b>${RANKS[r][0]}</b>, ${stats.xp} reputation. ${stats.solved} solved, ${stats.lost} lost. ${nx?`${nx[1]-stats.xp} more to make ${nx[0]}.`:"Top rank."}</p>
   <ul>${RANKS.slice(1).map((x,i)=>`<li class="${i+1<=r?"good":"sub"}">${x[0]} (${x[1]}): ${x[2]}</li>`).join("")}</ul></section>
   <section class="desk"><h2>Share this case</h2><p class="code">${code(C.seed)}</p><p>Anyone who enters this code hunts the same killer, with the same suspects, clues, and schedule.</p>${btn("copy","","Copy the case code")}</section>
-  <section class="desk"><h2>Open a case</h2><p><input class="field" id="code" data-f="pcode" value="${esc(F.pcode)}" maxlength="7" placeholder="Case code" aria-label="Case code"> ${btn("playCode","","Play this code")}</p><p>${btn("newCase","","Abandon this case and open a new one")}</p></section>
+  <section class="desk"><h2>Open a case</h2><p>Difficulty for the next case you open:</p><div class="acts" style="margin:0 0 6px">${DIFF.map((x,i)=>btn("setDiff",i,x.n,0,nextDiff===i?"on":"")).join("")}</div><p class="sub">${DIFF[nextDiff].d} The same code gives the same killer at every difficulty.</p><p><input class="field" id="code" data-f="pcode" value="${esc(F.pcode)}" maxlength="7" placeholder="Case code" aria-label="Case code"> ${btn("playCode","","Play this code")}</p><p>${btn("newCase","","Abandon this case and open a new one")}</p></section>
   <section class="desk"><h2>Case archive</h2>${archive()}</section>${adminLogin()}`;
 }
 function archive(){
   if(!stats.archive.length)return `<p class="empty">No closed cases yet. Every killer you catch or lose is filed here.</p>`;
-  return `<div class="cards">${stats.archive.map(a=>`<div class="card"><span class="vnum ${a.won?"live":""}">${a.won?"Caught":"Escaped"}</span><h3>${a.moniker}</h3><div class="sub">${a.name}, ${a.city}</div><p>${a.type}. Day ${a.day}, ${a.dead} dead${a.saved?`, ${a.saved} saved`:""}.</p><p class="sub" style="margin:0">Code ${a.code}</p></div>`).join("")}</div>`;
+  return `<div class="cards">${stats.archive.map(a=>`<div class="card"><span class="vnum ${a.won?"live":""}">${a.won?"Caught":"Escaped"}</span><h3>${a.moniker}</h3><div class="sub">${a.name}, ${a.city}</div><p>${a.type}${a.diff?`, ${a.diff}`:""}. Day ${a.day}, ${a.dead} dead${a.saved?`, ${a.saved} saved`:""}.</p><p class="sub" style="margin:0">Code ${a.code}</p></div>`).join("")}</div>`;
 }
 function side(){
   const sure=P.clues.filter(c=>c.sure),wit=P.clues.filter(c=>!c.sure&&c.src!=="Letter"),let_=P.clues.filter(c=>c.src==="Letter");
@@ -515,7 +528,7 @@ function endScreen(){
     :o.how==="win"?`You arrested ${k.name} on day ${P.day}. ${rk}`
     :o.how==="wrong"?`You arrested ${C.suspects[o.i].name}. They were innocent, and by the time that was clear, ${k.name} had left ${C.city} for good.`
     :o.how==="panic"?`The city stopped believing you. The mayor handed the case to someone else on day ${P.day}. The killer was ${k.name}.`
-    :`${C.victims[P.vs[5]].name} was the sixth to die. The task force was dissolved that afternoon. The killer was ${k.name}.`;
+    :`${C.victims[P.vs[P.vs.length-1]].name} was victim number ${d}. The task force was dissolved that afternoon. The killer was ${k.name}.`;
   const fake=C.letters.filter(l=>!l.genuine).length,real=C.letters.length-fake;
   return `<div class="end"><div class="stamp ${win?"win":"lose"}">${win?"Case closed":"Case lost"}</div><h2>${m.moniker}</h2><p>${lead}</p>
   <div class="card"><h3>${k.name}</h3><div class="sub">${k.age}, ${k.occ}, ${k.district}. ${TYPES[m.type].label}.</div>
@@ -533,7 +546,7 @@ function render(){
   if(P.over){app.innerHTML=header()+`<div class="wrap"><img class="banner" src="${LOGO}" alt="Murder &amp; Motive">${endScreen()}</div>`;return}
   const tabs=[["victims",`Victims (${P.vs.length+P.saved.length})`],["suspects","Suspects"],["letters",`Letters (${P.letters.length})`],["log",`Case file (${P.clues.length})`],["board","Leaderboard"],["desk","Desk"]];if(NET.admin)tabs.push(["admin","Admin"]);if(P.tab==="admin"&&!NET.admin)P.tab="desk";
   const body={victims:victimsTab,suspects:suspectsTab,letters:lettersTab,log:logTab,desk:deskTab,board:boardTab,admin:adminTab}[P.tab]();
-  app.innerHTML=header()+`<div class="wrap">${NET.cfg.banner?`<div class="notice" style="border-left-color:#c9a227">${esc(NET.cfg.banner)}</div>`:""}${P.tab==="victims"?`<img class="banner" src="${LOGO}" alt="Murder &amp; Motive">`:""}${P.notice?`<div class="notice" role="status">${P.notice}</div>`:""}
+  app.innerHTML=header()+`<div class="wrap">${NET.cfg.banner?`<div class="announce">${esc(NET.cfg.banner)}</div>`:""}${P.tab==="victims"?`<img class="banner" src="${LOGO}" alt="Murder &amp; Motive">`:""}${P.notice?`<div class="notice" role="status" data-a="dismiss">${P.notice} <small>(tap to dismiss)</small></div>`:""}
   <div class="layout"><main><div class="tabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${P.tab===t[0]}" data-a="tab" data-i="${t[0]}">${t[1]}</button>`).join("")}</div>${body}</main>${side()}</div></div>`;
 }
 
