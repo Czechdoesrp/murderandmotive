@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Murder &amp; Motive</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=UnifrakturMaguntia&family=Permanent+Marker&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
 <style>
 :root{
   --bg:#0c0808;--card:#191111;--ink:#efe7da;--muted:#a8978b;--line:#4a2d2b;
@@ -119,6 +119,79 @@ section.desk ul{padding-left:20px}
 .notice{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;z-index:9;border:2px solid var(--blood);border-left-width:8px;box-shadow:0 6px 24px #000;cursor:pointer}
 .notice small{font-weight:400;color:var(--muted)}
 .wrap{padding-bottom:150px}
+.mug{display:flex;gap:12px;align-items:flex-start}
+.mug>div{min-width:0;flex:1}
+.pt{width:76px;flex:none;border:4px solid #ece7d9;border-bottom-width:12px;box-shadow:0 2px 6px #000;transform:rotate(-2deg);margin-top:4px}
+.card:nth-child(even) .pt{transform:rotate(1.5deg)}
+.pt.big{width:120px;float:right;margin:0 0 8px 14px}
+.stps{display:flex;flex-wrap:wrap;gap:6px 8px;margin:6px 0 2px}
+.stp{display:inline-block;border:2px solid currentColor;border-radius:3px;padding:1px 7px 0;font-family:"Special Elite","Courier New",monospace;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;transform:rotate(var(--r));opacity:.92}
+.stp.g{color:var(--ok)}.stp.r{color:var(--blood)}.stp.k{color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.stp.slam{animation:slam .35s cubic-bezier(.2,1.6,.4,1)}}
+@keyframes slam{from{transform:rotate(var(--r)) scale(2.6);opacity:0}}
+.paper{background:#ddd6c4;color:#14110f;padding:12px 16px 10px;margin:0 0 18px;max-width:68ch;border:1px solid #000;box-shadow:0 6px 18px #000;transform:rotate(-.4deg)}
+.paper .mast{font-family:"UnifrakturMaguntia","Old English Text MT",Georgia,serif;font-size:1.9rem;line-height:1.1;text-align:center;border-bottom:3px double #14110f;padding-bottom:4px}
+.paper .dl{display:flex;justify-content:space-between;font-size:.75rem;border-bottom:1px solid #14110f;padding:2px 0;margin-bottom:10px}
+.paper h3{font-family:"Playfair Display",Georgia,"Times New Roman",serif;font-weight:800;font-size:clamp(1.5rem,5vw,2.3rem);line-height:1.02;text-transform:uppercase;letter-spacing:0;color:#14110f;margin:0 0 6px}
+.paper.t2 h3{font-size:clamp(2rem,8vw,3.4rem)}
+.paper p{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:.98rem;line-height:1.4}
+.letter{background:#e4d9bd;color:#221a14;border:0;padding:16px 18px;margin:0 0 22px;max-width:60ch;box-shadow:0 6px 16px #000;
+  background-image:radial-gradient(circle at 82% 78%,rgba(120,80,30,.28) 0,transparent 22%),radial-gradient(circle at 12% 18%,rgba(120,80,30,.16) 0,transparent 18%),linear-gradient(90deg,transparent 49.7%,rgba(0,0,0,.14) 50%,transparent 50.4%),linear-gradient(0deg,transparent 49.6%,rgba(0,0,0,.1) 50%,transparent 50.5%)}
+.letter blockquote{font-family:"Special Elite","Courier New",monospace;font-style:normal;font-size:1.02rem;line-height:1.6;margin:10px 0 14px}
+.letter.hand blockquote{font-family:"Permanent Marker","Comic Sans MS",cursive;font-size:1.08rem;line-height:1.5}
+.pm{display:flex;justify-content:flex-end;align-items:center;gap:10px;color:#7a2a2a;opacity:.8;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+.pm svg{width:84px;transform:rotate(-8deg)}
+.labnote{background:#f6f4ec;color:#222;border:1px solid #8c8c8c;padding:6px 10px;font-size:.88rem;transform:rotate(-.6deg);box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.map{display:block;width:100%;height:auto;border:2px solid var(--line);background:#150f0f;box-shadow:0 6px 18px #000;margin:0 0 6px;font-family:"Special Elite","Courier New",monospace}
+.map g.d{cursor:pointer;outline:none}
+.map g.d polygon{stroke:#5a3a36;stroke-width:2}
+.map g.d:hover polygon:first-child,.map g.d:focus-visible polygon:first-child{fill:#33211f}
+.map g.d:focus-visible polygon,.map g.d.pat polygon{stroke:#e2b100;stroke-width:3}
+.map g.d text{fill:#cdbfb0;font-size:15px;pointer-events:none}
+.map g.d text.pl{fill:#e2b100;font-size:11px}
+.map .st{stroke:#3a2826;stroke-width:1;fill:none;pointer-events:none}
+.map .river{stroke:#1d3a4a;stroke-width:16;fill:none;opacity:.75;pointer-events:none;stroke-linecap:round}
+.map .string{stroke:#e0202c;stroke-width:1.6;fill:none;stroke-dasharray:5 4;pointer-events:none}
+.map .pin{pointer-events:none}
+.map .pin circle{fill:#c1121f;stroke:#f5eee2;stroke-width:1.5}
+.map .pin.live circle{fill:#2f8f5b}
+.map .pin text{fill:#fff;font-size:12px;font-weight:700;font-family:Arial,sans-serif}
+.map .pin .ring{fill:none;stroke:#ff4040;stroke-width:2}
+@media (prefers-reduced-motion:no-preference){.map .pin .ring{animation:ping 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}}
+@keyframes ping{to{transform:scale(2.4);opacity:0}}
+@media (max-width:560px){.map g.d text{font-size:19px}.map g.d text.pl{font-size:14px}.map .pin text{font-size:15px}.map .pin circle{r:14px}}
+.cork{position:relative;display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:20px 16px;padding:26px 16px 24px;border:10px solid #2b1b12;border-radius:3px;box-shadow:inset 0 0 40px rgba(0,0,0,.65),0 8px 24px #000;
+  background-color:#6a4a30;background-image:radial-gradient(#3e2a1a 1px,transparent 1.6px),radial-gradient(#8a6644 1px,transparent 1.5px),radial-gradient(ellipse at 50% 0,rgba(255,220,160,.22),transparent 70%);background-size:7px 7px,11px 11px,100% 100%;background-position:0 0,3px 5px,0 0}
+.sL,.sR{display:grid;grid-template-columns:1fr 1fr;gap:24px 12px;align-content:start}
+.mid{display:grid;grid-template-columns:1fr 1fr;gap:22px 10px;align-content:start}
+.pol,.cl{position:relative;z-index:1;font:inherit;cursor:pointer;transform:rotate(var(--r));border:0;border-radius:0;box-shadow:0 3px 8px rgba(0,0,0,.7);transition:opacity .2s;display:block;width:100%}
+.pol{background:#ece7d9;color:#14110f;padding:5px 5px 4px;text-align:center}
+.pol .pt{width:100%;border:0;box-shadow:none;transform:none!important;margin:0;display:block}
+.pol .nm{display:block;font-family:"Permanent Marker","Comic Sans MS",cursive;font-size:.7rem;line-height:1.15;margin-top:4px;min-height:2.3em}
+.pol .tl{display:flex;justify-content:center;gap:10px;font:700 .8rem Arial,sans-serif}
+.pol .tl b{color:#14633f}.pol .tl em{color:#9b1c2e;font-style:normal}
+.pn{position:absolute;top:-6px;left:50%;margin-left:-6px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff6b6b,#b00d18 60%,#5a0509);box-shadow:0 2px 3px #000;z-index:3}
+.pol.out{filter:grayscale(1);opacity:.6}
+.ost{position:absolute;top:30%;left:-3%;right:-3%;transform:rotate(-14deg);border:2px solid #9b1c2e;color:#9b1c2e;background:rgba(236,231,217,.85);font-family:"Special Elite","Courier New",monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.pol.sus{outline:3px solid #e0202c;outline-offset:2px}
+.pol.on,.cl.on{outline:3px solid #f0c419;outline-offset:2px}
+.pol.m,.cl.m{outline:3px solid #e0202c;outline-offset:2px}
+.pol.x,.cl.x{opacity:.3}.pol.u,.cl.u{opacity:.65}
+.cl{background:#f4f1e6 repeating-linear-gradient(transparent 0 17px,#a9c0db 17px 18px);color:#14110f;padding:10px 8px 8px;text-align:left;min-height:66px}
+.cl.rep{background-color:#efe2a8}
+.cl small{display:block;font-size:.68rem;line-height:1.2;color:#4d4033}
+.cl b{display:block;font-size:.86rem;line-height:1.25;overflow-wrap:anywhere}
+.who{grid-column:1/-1;position:relative;z-index:1;background:#14110f;color:#efe7da;text-align:center;padding:10px 8px;box-shadow:0 3px 8px rgba(0,0,0,.7);font-family:"Special Elite","Courier New",monospace}
+.who span{display:block;font-family:"Permanent Marker",cursive;font-size:3rem;line-height:1;color:#e0202c}
+.note{grid-column:1/-1;position:relative;z-index:1;background:#f4f1e6;color:#14110f;padding:10px;margin:0}
+.strs{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:visible}
+.strs path{fill:none;stroke:#e0202c;stroke-width:1.8;opacity:.5;filter:drop-shadow(0 2px 1px rgba(0,0,0,.55))}
+.strs path.rep{stroke:#f0b400}
+.strs path.hi{opacity:1;stroke-width:2.6}.strs path.lo{opacity:.06}
+@media (prefers-reduced-motion:no-preference){.strs path.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .7s ease-out forwards}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.det{margin-top:16px}.det h2{margin-bottom:4px}.det p{margin:6px 0}
+@media (max-width:700px){.cork{grid-template-columns:1fr;padding:22px 10px;border-width:6px}.mid{order:-1}.sL,.sR{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
@@ -206,7 +279,7 @@ function generate(seed){
     const lie=s.killer?true:r()<.12,alt=pick(pool),nerv=r()<.2,tell=pick(Object.values(TELL)),neu=pick(NEUTRAL),sl=r();
     s.talk={trait:tr,claim:lie?alt:s[tr],react:s.killer?TELL[type]:nerv?tell:neu,slip:!!s.killer&&sl<SLIP[type]}});
   const vt=pick(VTYPES),sig=pick(SIGS);
-  const mo={type,method:pick(METHODS),sig,vtype:vt[0],motive:pick(MOTIVES),moniker:"The "+(r()<.5?pick(districts):pick(MON_A))+" "+pick(MON_B)};
+  const mo={type,method:pick(METHODS),sig,vtype:vt[0],motive:pick(MOTIVES),moniker:("The "+(r()<.5?pick(districts):pick(MON_A))+" "+pick(MON_B)).replace("The The ","The ")};
   const fo=shuf(FOR),ao=shuf(["field","build","height"]),wo=shuf(["vehicle","age","height","build","hair"]);
   const kv=t=>t==="age"?decade(killer.age):killer[t];
   const wrong=t=>pick({vehicle:ALLVEH,age:["20s","30s","40s","50s","60s"],height:HEIGHT,build:BUILD,hair:HAIR}[t].filter(v=>v!==kv(t)));
@@ -246,7 +319,7 @@ const D=()=>DIFF[(P&&P.diff)||0];
 let nextDiff=store.get("mm_diff",0);if(!DIFF[nextDiff])nextDiff=0;
 const maxHours=()=>8+D().h+(rank()>=1?1:0)+(rank()>=4?1:0)-(P.panic>=60?1:0)-(P.panic>=80?1:0);
 function newSeed(){let s;const a=new Uint32Array(1);do{crypto.getRandomValues(a);s=a[0]}while(stats.seeds.includes(s));return s}
-function startCase(seed,diff){if(!stats.seeds.includes(seed)){stats.seeds.push(seed);if(stats.seeds.length>5000)stats.seeds.shift();store.set("nta_stats",stats)}
+function startCase(seed,diff){sel=null;if(!stats.seeds.includes(seed)){stats.seeds.push(seed);if(stats.seeds.length>5000)stats.seeds.shift();store.set("nta_stats",stats)}
   C=generate(seed);P={day:1,hours:8,vs:[0,1],nxt:2,saved:[],panic:25,done:{},clues:[],letters:[],tags:{},dug:{},alibi:{},talked:{},sus:{},watched:{},searched:{},stake:null,patrol:null,press:0,profile:false,over:null,tab:"victims",confirm:null,notice:""};
   let df=diff===undefined?nextDiff:diff;if(typeof NET!=="undefined"&&NET.cfg&&NET.cfg.weeklyCode===code(seed)&&NET.cfg.weeklyDiff>=0)df=NET.cfg.weeklyDiff;
   P.diff=DIFF[df]?df:0;P.panic=D().panic;P.hours=maxHours();save();render();window.scrollTo(0,0)}
@@ -271,31 +344,32 @@ const A={
   alibi(i){if(spend(cost("alibi"))){P.alibi[i]=D().one?Math.min(dead(),(P.alibi[i]||0)+1):dead();const s=C.suspects[i];P.notice=P.vs.slice(0,P.alibi[i]).some(v=>s.alibi[v])?s.name+" has a verified alibi.":s.name+" has no alibi anyone can verify."}},
   talk(i){if(spend(cost("talk"))){P.talked[i]=1;P.notice="Interview with "+C.suspects[i].name+" is on their card."}},
   stake(i){if(P.stake===i){P.stake=null;P.hours+=cost("stake");return}if(P.stake!==null){P.notice="You can only watch one suspect a night. Cancel the other stakeout first.";return}if(spend(cost("stake"))){P.stake=i;P.notice="You will sit on "+C.suspects[i].name+" tonight."}},
-  patrol(d){if(P.patrol===d){P.patrol=null;P.hours+=cost("patrol");return}if(P.patrol){P.patrol=d;return}if(spend(cost("patrol"))){P.patrol=d;P.notice="Extra patrols will cover "+d+" tonight."}},
+  patrol(d){if(P.patrol===d){P.patrol=null;P.hours+=cost("patrol");return}if(P.patrol){P.patrol=d;return}if(spend(cost("patrol"))){P.patrol=d;P.notice="Extra patrols will cover "+d+" tonight."}else P.notice="Posting patrols takes "+cost("patrol")+" hours and you have "+P.hours+" left today."},
   warrant(i){const s=C.suspects[i],c=cause(i),need=D().need-(rank()>=3?1:0);
     if(c.bad||c.m<need){if(spend(1)){P.searched[i]="denied";P.wmsg=P.wmsg||{};P.wmsg[i]=P.notice=c.bad?`The judge refused. Evidence you already hold rules ${s.name} out on at least one point.`:`The judge refused. You have ${c.m} point${c.m===1?"":"s"} of probable cause against ${s.name} and need ${need}.`}return}
     if(P.hours<cost("warrant")){P.notice=`The judge will sign a warrant for ${s.name}, but the search takes ${cost("warrant")} hours and you only have ${P.hours} left today. Request it again tomorrow with a full day.`;return}
     if(spend(cost("warrant"))){if(s.killer){P.searched[i]="found";P.notice=`Warrant granted. Behind a false panel in ${s.name}'s home you found keepsakes from every victim and the materials for the mark left at each scene.`}
-      else{P.searched[i]="clean";panic(8);P.notice=`Warrant granted. You tore ${s.name}'s home apart and found nothing. The papers have the story.`}}},
+      else{P.searched[i]="clean";panic(8);headline("raid",s);P.notice=`Warrant granted. You tore ${s.name}'s home apart and found nothing. The papers have the story.`}}},
   profile(){if(spend(cost("profile"))){P.profile=true;const t=TYPES[C.mo.type];
     addClue({src:"Profile",trait:"district",val:C.geo.join(" or "),sure:true,text:`Mapping the scenes against travel times puts the killer's home in ${C.geo[0]} or ${C.geo[1]}.`},null);
     P.notice="Profile complete. Behavior type: "+t.label+"."}},
-  reassure(){if(spend(cost("press"))){P.press=P.day;panic(-12);P.notice="You stood at the podium and told the city you are close. People believed you, for now."}},
-  tips(){if(spend(cost("press"))){P.press=P.day;panic(6);const pool=C.victims.filter((v,i)=>!P.done["w"+i]);const w=pool.length?pool[Math.floor(Math.random()*pool.length)].witness:C.victims[0].witness;
+  reassure(){if(spend(cost("press"))){P.press=P.day;panic(-12);headline("reassure");P.notice="You stood at the podium and told the city you are close. People believed you, for now."}},
+  tips(){if(spend(cost("press"))){P.press=P.day;panic(6);headline("tips");const pool=C.victims.filter((v,i)=>!P.done["w"+i]);const w=pool.length?pool[Math.floor(Math.random()*pool.length)].witness:C.victims[0].witness;
     addClue(Object.assign({},w,{src:"Witness",who:"a tip line caller"}),null);P.notice="You asked the public for help. The phones lit up, panic rose, and one call sounded real. It is in the case file."}},
   tag(i){P.tags[i]=({undefined:"sus",sus:"clr",clr:undefined})[P.tags[i]]},
   arrest(i){if(P.confirm!==i){P.confirm=i;return}finish(C.suspects[i].killer?"win":"wrong",i)},
   cancel(){P.confirm=null},
   dismiss(){P.notice=""},
+  pick(v){sel=sel===v?null:v},
   setDiff(n){nextDiff=n;store.set("mm_diff",n)},
   endDay(){
     P.day++;P.confirm=null;const n=[],st=P.stake,pa=P.patrol;P.stake=P.patrol=null;
     if(P.nxt<C.victims.length&&P.day>=C.strike[P.nxt]){
       const vi=P.nxt++,v=C.victims[vi],k=killer();
       if(st!==null&&C.suspects[st].killer){finish("act",st);return}
-      if(pa===v.district){P.saved.push(vi);panic(-15);["height","hair","vehicle"].forEach(t=>addClue({src:"Survivor",trait:t,val:k[t],sure:true,text:clueText("Survivor",t,k[t])},vi));
+      if(pa===v.district){P.saved.push(vi);panic(-15);headline("saved",v);["height","hair","vehicle"].forEach(t=>addClue({src:"Survivor",trait:t,val:k[t],sure:true,text:clueText("Survivor",t,k[t])},vi));
         n.push(`Your patrols in ${pa} interrupted an attack. ${v.name} is alive and gave you a description.`)}
-      else{P.vs.push(vi);panic(18);n.push(`${C.mo.moniker} has killed again. ${v.name} was found ${v.loc} in ${v.district}.`);
+      else{P.vs.push(vi);panic(18);headline("murder",v);n.push(`${C.mo.moniker} has killed again. ${v.name} was found ${v.loc} in ${v.district}.`);
         if(pa)n.push(`Your patrols were in ${pa}.`);
         if(st!==null){P.watched[st]=v.name;n.push(`${C.suspects[st].name} was under your eyes all night and did not do this.`)}
         if(dead()>=D().max){finish("six");return}}
@@ -306,7 +380,7 @@ const A={
         else n.push(`${s.name} did nothing unusual last night.`)}
       if(pa)n.push(`Patrols in ${pa} reported a quiet night.`);
     }
-    C.letters.forEach((l,i)=>{if(l.day===P.day){P.letters.unshift(i);panic(4);addClue({src:"Letter",trait:l.trait,val:l.val,sure:false,who:"",text:clueText("Letter",l.trait,l.val)},null);n.push("A letter addressed to you arrived this morning.")}});
+    C.letters.forEach((l,i)=>{if(l.day===P.day){P.letters.unshift(i);panic(4);headline("letter");addClue({src:"Letter",trait:l.trait,val:l.val,sure:false,who:"",text:clueText("Letter",l.trait,l.val)},null);n.push("A letter addressed to you arrived this morning.")}});
     panic(2);if(P.panic>=100){finish("panic");return}
     P.hours=maxHours();if(P.panic>=60)n.push("Press conferences and calls from the mayor are eating into your day.");
     P.notice=n.join(" ");
@@ -445,17 +519,18 @@ function header(){
 }
 function victimsTab(){
   const m=C.mo,all=P.vs.map(i=>[i,0]).concat(P.saved.map(i=>[i,1])).sort((a,b)=>a[0]-b[0]);
-  return `<div class="brief"><h2>${m.moniker}</h2><p>That is what the papers are calling whoever is killing ${m.vtype} in ${C.city}. Each death is by ${m.method}. One detail has been kept from the press: ${m.sig.charAt(0).toLowerCase()+m.sig.slice(1)} You have a list of twelve names. One of them did this.</p></div>
+  return `<div class="brief"><h2>${m.moniker}</h2><p>That is what the papers are calling whoever is killing ${m.vtype} in ${C.city}. Each death is by ${m.method}. One detail has been kept from the press: ${m.sig.charAt(0).toLowerCase()+m.sig.slice(1)} You have a list of twelve names. One of them did this.</p></div>${paperHTML()}
   <details class="how"><summary>How this works</summary><ul>
   <li>Every action costs hours. End the day when you run out. Scenes and autopsies give facts you can rely on. Witnesses are right about three times in four.</li>
   <li>Background checks show the details evidence can be matched against. A verified alibi for any one murder rules a suspect out.</li>
+  <li>The Board tab pins every clue and suspect to a corkboard and strings together the ones that match.</li>
   <li>Interviews: a suspect's answer can be checked against their records, and only the killer can let slip the detail you held back.</li>
   <li>Letters: a real one quotes the held-back detail correctly. Cranks get it wrong, so ignore what their letters tell you.</li>
   <li>Stakeout: watch one suspect overnight. If the killer strikes while you watch someone else, that person is cleared. If you are watching the killer, you catch them in the act.</li>
   <li>Patrols: guess the district of the next strike from the pattern of dates and places. Guess right on the right night and the victim lives.</li>
   <li>Warrants: a judge wants ${D().need-(rank()>=3?1:0)} points of evidence matching a suspect and none against. Searching the killer's home finds proof.</li>
   <li>Panic rises with every death and letter. High panic costs you hours. At 100% you are replaced. ${D().max} deaths or a wrong arrest also ends the case.</li></ul></details>
-  <div class="cards">${all.map(([i,live])=>{const v=C.victims[i];return `<div class="card"><span class="vnum ${live?"live":""}">${live?"Survived":dayLabel(C.strike[i])}</span><h3>${v.name}</h3><div class="sub">${v.age}, ${v.occ}</div>
+  ${mapHTML(all)}<div class="cards">${all.map(([i,live],n)=>{const v=C.victims[i];return `<div class="card"><span class="vnum ${live?"live":""}">#${n+1}, ${live?"survived":dayLabel(C.strike[i])}</span><h3>${v.name}</h3><div class="sub">${v.age}, ${v.occ}</div>
   <p>${live?`Attacked in <b>${v.district}</b> on day ${C.strike[i]}. Your patrols got there in time.`:`Found ${v.loc} in <b>${v.district}</b>, ${dayLabel(C.strike[i])}.`}</p>
   ${live?"":`<div class="acts">${P.done["s"+i]?"":btn("scene",i,"Process the scene",cost("scene"))}${P.done["a"+i]?"":btn("autopsy",i,"Read the autopsy",cost("autopsy"))}${P.done["w"+i]?"":btn("witness",i,"Find a witness",cost("witness"))}
   ${P.done["s"+i]&&P.done["a"+i]&&P.done["w"+i]?`<span class="empty">Nothing left to learn here.</span>`:""}</div>`}</div>`}).join("")}</div>
@@ -466,7 +541,7 @@ function suspectsTab(){
     const t=P.tags[i]||"",chk=P.alibi[i],has=chk&&P.vs.slice(0,chk).some(v=>s.alibi[v]);
     const which=has?C.victims[P.vs.slice(0,chk).find(v=>s.alibi[v])].name:"",tk=s.talk,sr=P.searched[i];
     const contra=P.dug[i]&&P.talked[i]&&tk.claim!==s[tk.trait];
-    return `<div class="card ${t}"><h3>${s.name}</h3><div class="sub">${s.age}, ${s.occ}</div>
+    return `<div class="card ${t}"><div class="mug">${portrait(s)}<div><h3>${s.name}</h3><div class="sub">${s.age}, ${s.occ}</div>${stamps(i,has,t)}</div></div>
     <dl><dt>Lives in</dt><dd>${s.district}</dd><dt>Height</dt><dd>${s.height}</dd><dt>Build</dt><dd>${s.build}</dd><dt>Hair</dt><dd>${s.hair}</dd></dl>
     <p class="sub">${s.flag}</p>
     ${P.dug[i]?`<dl class="blk"><dt>Shoe size</dt><dd>${s.shoe}</dd><dt>Blood type</dt><dd>${s.blood}</dd><dt>Handed</dt><dd>${s.hand}</dd><dt>Habit</dt><dd>${s.habit}</dd><dt>Vehicle</dt><dd>${s.vehicle}</dd></dl>`:""}
@@ -484,9 +559,108 @@ function suspectsTab(){
     ${P.confirm===i?`<p class="sub">If you're wrong, the real killer walks. There is no second arrest.</p>`:""}</div>`}).join("")}</div>
   <p class="sub" style="margin-top:14px">A warrant request costs 1 hour if refused and ${cost("warrant")} hours if granted, because you carry out the search.</p>`;
 }
+/* ---------- graphics: portraits, stamps, newspaper ---------- */
+const hs=t=>{let h=7;for(const c of String(t))h=(h*31+c.charCodeAt(0))>>>0;return h};
+const HAIRC={black:"#141414","dark brown":"#3b2416","light brown":"#8a5a33",blond:"#d9b95c",red:"#a3391c",gray:"#8d8d8d",white:"#ecebe6"};
+function portrait(s,cls){
+  const h=hs(s.name),cy={tall:30,average:38,short:46}[s.height],b=BUILD.indexOf(s.build),rx=10+b*1.3,ry=rx*1.22,sw=20+b*5.5,sy=cy+ry+10,L=40-rx,st=h%4;
+  const hair=st===1?`M${L-2} ${cy+ry} v-${ry} a${rx+2} ${ry+2} 0 0 1 ${2*rx+4} 0 v${ry} h-3 v-${ry} q-${rx-1} -${ry*.6} -${2*rx-2} 0 v${ry}z`
+    :`M${L-1} ${cy} a${rx+1} ${ry+(st===3?4:1)} 0 0 1 ${2*rx+2} 0 q-${rx+1} -${ry*(st===2?1.5:.5)} -${2*rx+2} 0z`;
+  let lines="";for(let y=12;y<96;y+=12)lines+=`<path d="M0 ${y}h80" stroke="#8d8672" stroke-width=".6"/><text x="2" y="${y-1.5}" font-size="4.5" fill="#6d6654">${(78-y/2)|0}</text>`;
+  return `<svg class="pt ${cls||""}" viewBox="0 0 80 96" aria-hidden="true"><rect width="80" height="96" fill="#cfc7b4"/>${lines}
+  <path d="M${40-sw} 96 V${sy} q0 -8 ${sw-5} -9 h10 q${sw-5} 1 ${sw-5} 9 V96z" fill="#1c1a19"/><rect x="36" y="${cy+ry-3}" width="8" height="9" fill="#1c1a19"/>
+  <ellipse cx="40" cy="${cy}" rx="${rx}" ry="${ry}" fill="#2a2625"/><path d="${hair}" fill="${HAIRC[s.hair]}" stroke="#000" stroke-width=".5"/>
+  <rect x="27" y="${sy+3}" width="26" height="9" fill="#ece7d9" stroke="#000" stroke-width=".5"/><text x="40" y="${sy+9.8}" font-size="6" text-anchor="middle" fill="#111" font-family="monospace">${String(h%90000+10000)}</text></svg>`;
+}
+const seenSt=new Set();let booted=false;
+function stamps(i,has,t){
+  const sr=P.searched[i],a=[];
+  if(has)a.push(["Alibi verified","g"]);if(P.watched[i])a.push(["Cleared","g"]);if(sr==="clean")a.push(["Searched, clean","g"]);
+  if(sr==="denied")a.push(["Warrant denied","r"]);if(sr==="found")a.push(["Evidence found","r"]);if(P.sus[i])a.push(["Seen prowling","r"]);
+  if(P.talked[i]&&C.suspects[i].talk.slip)a.push(["Slipped up","r"]);
+  if(t==="sus")a.push(["Suspect","r"]);if(t==="clr")a.push(["Ruled out","k"]);
+  if(!a.length)return "";
+  return `<div class="stps">${a.map(([l,c],j)=>{const k=C.seed+":"+i+l,nw=booted&&!seenSt.has(k);seenSt.add(k);return `<span class="stp ${c} ${nw?"slam":""}" style="--r:${(j%2?1:-1)*(2+(i+j)%3)}deg">${l}</span>`}).join("")}</div>`;
+}
+const MAST=["Courier","Ledger","Sentinel","Dispatch","Examiner","Herald"];
+function headline(kind,x){
+  const t=P.panic>=70?2:P.panic>=40?1:0,M=C.mo.moniker,pk=a=>a[Math.floor(Math.random()*a.length)],n=dead();
+  P.news=P.news||[];if(kind==="letter"&&P.news[0]&&P.news[0].day===P.day)return;
+  let head,sub;
+  if(kind==="murder"){head=pk([[`Body found in ${x.district}`,`Police link ${x.district} death to earlier killings`],[`${M} strikes again`,`Another one: ${x.occ} slain in ${x.district}`],[`Who is next?`,`${n} dead and no arrest`,`City of fear`]][t]);
+    sub=`${x.name}, ${x.age}, ${x.occ}, was found ${x.loc}. `+["Police say the investigation is active.","Residents are being told not to walk alone at night.","Calls are growing for the lead detective to be replaced."][t]}
+  else if(kind==="saved"){head=pk([`Patrol stops attack in ${x.district}`,`Victim escapes ${M}`]);sub=`${x.name} survived and is giving police a description of the attacker.`}
+  else if(kind==="reassure"){head=t===2?"Police plead for calm":`Detective: "We are close"`;sub="The lead detective told reporters that an arrest is a matter of time."}
+  else if(kind==="tips"){head=`Police ask the public: who is ${M}?`;sub="Tip lines opened this morning. Callers jammed the switchboard within the hour."}
+  else if(kind==="raid"){head="Police raid the wrong house";sub=`The home of ${x.name} was searched and nothing was found. A lawyer called it harassment.`}
+  else{head="Letter claims to be from the killer";sub="Police will not say whether it is genuine."}
+  P.news.unshift({day:P.day,head,sub,t});
+}
+function paperHTML(){
+  const a=P.news||[],n=a[0]||{day:1,t:0,head:`${C.mo.moniker} hunted in ${C.city}`,sub:"The killings are being treated as the work of one person. A new detective takes the case today."};
+  return `<div class="paper t${n.t}"><div class="mast">The ${C.city} ${MAST[C.seed%6]}</div><div class="dl"><span>Day ${n.day} edition</span><span>Late city final</span></div><h3>${n.head}</h3><p>${n.sub}</p></div>
+  ${a.length>1?`<details class="how"><summary>Earlier front pages (${a.length-1})</summary><ul>${a.slice(1).map(x=>`<li>Day ${x.day}: ${x.head}</li>`).join("")}</ul></details>`:""}`;
+}
 function lettersTab(){
   if(!P.letters.length)return `<p class="empty">No letters yet. If the killer or anyone pretending to be the killer writes to you, it will land here.</p>`;
-  return `<p class="sub">Compare the detail each writer quotes with the one you held back. Only the killer knows the real one.</p>`+P.letters.map(i=>{const l=C.letters[i];return `<div class="letter"><div class="sub">Arrived day ${l.day}. Postmarked ${l.postmark}.</div><blockquote>${l.body}</blockquote><div class="sub" style="margin:0">${clueText("Letter",l.trait,l.val)}</div></div>`}).join("");
+  return `<p class="sub">Compare the detail each writer quotes with the one you held back. Only the killer knows the real one.</p>`+P.letters.map(i=>{const l=C.letters[i],v=(C.seed>>>i)%5;
+    return `<div class="letter ${(C.seed+i)%2?"hand":""}" style="transform:rotate(${(v-2)*.4}deg)"><div class="pm"><span>Postmarked ${l.postmark}</span><svg viewBox="0 0 70 44" aria-hidden="true"><circle cx="22" cy="22" r="19" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="22" cy="22" r="15" fill="none" stroke="currentColor" stroke-width=".7"/><text x="22" y="20" text-anchor="middle" font-size="7" fill="currentColor">DAY</text><text x="22" y="30" text-anchor="middle" font-size="10" fill="currentColor">${l.day}</text><path d="M42 12q4-4 8 0t8 0 8 0M42 22q4-4 8 0t8 0 8 0M42 32q4-4 8 0t8 0 8 0" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></div>
+    <blockquote>${l.body}</blockquote><div class="labnote">${clueText("Letter",l.trait,l.val)}</div></div>`}).join("");
+}
+/* ---------- city map ---------- */
+function mapHTML(all){
+  const r=rng((C.seed^0x9e3779b9)>>>0),j=n=>(r()-.5)*n,X=[0,200,400,600],Y=[0,180,360],V=[];
+  for(let y=0;y<3;y++)for(let x=0;x<4;x++)V.push([X[x]+(x%3?j(70):0),Y[y]+(y===1?j(60):0)]);
+  const quad=d=>{const a=((d/3)|0)*4+d%3;return[V[a],V[a+1],V[a+5],V[a+4]]};
+  const lp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],pt=(q,u,v)=>lp(lp(q[0],q[1],u),lp(q[3],q[2],u),v),f=p=>p[0].toFixed(1)+" "+p[1].toFixed(1);
+  const ry=90+r()*180,ra=j(160),rb=j(160),ry2=90+r()*180;
+  let ds="",pins="",path="";
+  C.districts.forEach((d,k)=>{const q=quad(k),home=P.profile&&C.geo.includes(d),pat=P.patrol===d,c=pt(q,.5,.13);
+    let st="";[[.33,0,.33,1],[.66,0,.66,1],[0,.55,1,.55]].forEach(s=>{st+=`M${f(pt(q,s[0],s[1]))}L${f(pt(q,s[2],s[3]))}`});
+    ds+=`<g class="d ${pat?"pat":""}" data-a="patrol" data-i="${d}" role="button" tabindex="0" aria-label="${d}${pat?", patrols posted tonight":""}${home?", possible home of the killer":""}"><polygon points="${q.map(f).join(" ")}" fill="${k%2?"#241a19":"#1c1514"}"/>${home?`<polygon points="${q.map(f).join(" ")}" fill="url(#hatch)"/>`:""}<path d="${st}" class="st"/><text x="${c[0].toFixed(1)}" y="${(c[1]+6).toFixed(1)}" text-anchor="middle">${d}</text>${pat?`<text class="pl" x="${c[0].toFixed(1)}" y="${(c[1]+22).toFixed(1)}" text-anchor="middle">Patrols tonight</text>`:""}</g>`});
+  all.forEach(([i,live],n)=>{const v=C.victims[i],k=C.districts.indexOf(v.district),rr=rng(C.seed+i*7919+1),p=pt(quad(k),.14+.72*rr(),.3+.56*rr());
+    path+=(n?"L":"M")+f(p);
+    pins+=`<g class="pin ${live?"live":""}"><title>${n+1}. ${v.name}, ${v.district}, ${live?"survived":dayLabel(C.strike[i])}</title>${n===all.length-1?`<circle class="ring" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="12"/>`:""}<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="11"/><text x="${p[0].toFixed(1)}" y="${(p[1]+4.5).toFixed(1)}" text-anchor="middle">${n+1}</text></g>`});
+  return `<svg class="map" viewBox="0 0 600 360" role="group" aria-label="Map of ${C.city} with attacks numbered in order"><defs><pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3" height="9" fill="#c1121f" opacity=".3"/></pattern></defs>
+  ${ds}<path d="M-10 ${ry.toFixed(0)}C150 ${(ry+ra).toFixed(0)},420 ${(ry2+rb).toFixed(0)},610 ${ry2.toFixed(0)}" class="river"/><path d="${path}" class="string"/>${pins}</svg>
+  <p class="sub">Numbers show the order of the attacks; green means the victim survived. Tap a district to post tonight's patrols there (${cost("patrol")}h).${P.profile?" Striped districts are where the profile puts the killer's home.":""}</p>`;
+}
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches(".map g.d")){e.preventDefault();e.target.dispatchEvent(new MouseEvent("click",{bubbles:true}))}});
+/* ---------- evidence board ---------- */
+let sel=null,LINKS=[];const seenStr=new Set();
+function boardClues(){const seen={},a=[];P.clues.slice().reverse().forEach(c=>{const k=c.trait+"|"+c.val+"|"+(c.sure?1:0);if(seen[k])return;seen[k]=1;a.push(c)});return a}
+function match(c,i){const s=C.suspects[i],t=c.trait;
+  if(["shoe","blood","hand","habit","vehicle"].includes(t)&&!P.dug[i])return 0;
+  return (t==="district"?C.geo.includes(s.district):t==="age"?decade(s.age)===c.val:s[t]===c.val)?1:-1}
+function isOut(i){const s=C.suspects[i],chk=P.alibi[i];
+  if(chk&&P.vs.slice(0,chk).some(v=>s.alibi[v]))return "Alibi";if(P.watched[i])return "Cleared";if(P.searched[i]==="clean")return "Searched";if(P.tags[i]==="clr")return "Ruled out";return ""}
+function corkTab(){
+  const cl=boardClues();LINKS=[];if(sel&&sel[0]==="c"&&!cl[+sel.slice(1)])sel=null;
+  const pol=i=>{const s=C.suspects[i],out=isOut(i);let f=0,a=0;
+    cl.forEach((c,k)=>{const m=match(c,i);if(c.sure){if(m>0)f++;if(m<0)a++}
+      if(m>0&&!out){const key=C.seed+":"+k+">"+i;LINKS.push({c:k,s:i,sure:c.sure,nw:booted&&!seenStr.has(key)});seenStr.add(key)}});
+    let st="";if(sel&&sel[0]==="c"){const m=match(cl[+sel.slice(1)],i);st=m>0?"m":m<0?"x":"u"}else if(sel==="s"+i)st="on";
+    return `<button class="pol ${st} ${out?"out":""} ${P.tags[i]==="sus"?"sus":""}" id="po${i}" data-a="pick" data-i="s${i}" aria-pressed="${sel==="s"+i}" style="--r:${(hs(s.name)%7-3)*.8}deg"><i class="pn"></i>${portrait(s,"raw")}${out?`<span class="ost">${out}</span>`:""}<span class="nm">${s.name}</span><span class="tl" aria-label="${f} pieces of hard evidence match, ${a} against"><b>+${f}</b><em>&minus;${a}</em></span></button>`};
+  const card=(c,k)=>{let st="";if(sel&&sel[0]==="s"){const m=match(c,+sel.slice(1));st=m>0?"m":m<0?"x":"u"}else if(sel==="c"+k)st="on";
+    return `<button class="cl ${c.sure?"":"rep"} ${st}" id="cl${k}" data-a="pick" data-i="c${k}" aria-pressed="${sel==="c"+k}" style="--r:${((k*37)%5-2)*.9}deg"><i class="pn"></i><small>${TL[c.trait]}${c.sure?"":" (unverified)"}</small><b>${tv(c)}</b></button>`};
+  const lst=(t,a)=>a.length?`<p><b>${t}:</b> ${a.join("; ")}</p>`:"";
+  const Lh=[0,1,2,3,4,5].map(pol).join(""),Rh=[6,7,8,9,10,11].map(pol).join("");
+  let det;
+  if(!sel)det=`<p style="margin:0">Tap a photo or a clue card to trace its strings. Red string is hard evidence. Amber string is a witness or a letter, which can be wrong. Under each photo, the green number counts hard evidence that fits and the red number counts hard evidence against. Shoe size, blood type, handedness, habit, and vehicle only connect after a background check. Anyone you rule out has their strings cut.</p>`;
+  else if(sel[0]==="s"){const i=+sel.slice(1),s=C.suspects[i],g={"1":[],"-1":[],"0":[]},t=P.tags[i],o=isOut(i);
+    cl.forEach(c=>g[match(c,i)].push(TL[c.trait]+": "+tv(c)+(c.sure?"":" (unverified)")));
+    det=`<h2>${s.name}</h2><p class="sub">${s.age}, ${s.occ}, ${s.district}${o?". Off the board: "+o.toLowerCase():""}.</p>${lst("Fits",g[1])}${lst("Against",g[-1])}${lst("Needs a background check",g[0])}${cl.length?"":`<p class="empty">No clues pinned yet.</p>`}
+    <div class="acts">${btn("tag",i,t==="sus"?"Marked: suspicious":t==="clr"?"Marked: ruled out":"Mark")}${btn("tab","suspects","Open the suspect cards")}</div>`}
+  else{const c=cl[+sel.slice(1)],g={"1":[],"-1":[],"0":[]};C.suspects.forEach((s,i)=>g[match(c,i)].push(s.name));
+    det=`<h2>${TL[c.trait]}: ${tv(c)}</h2><p class="sub">${c.sure?"Hard evidence":"Unverified report"}. ${c.text}</p>${lst("Fits",g[1])}${lst("Does not fit",g[-1])}${lst("Needs a background check",g[0])}`}
+  return `<div class="cork"><div class="sL">${Lh}</div><div class="mid"><div class="who"><span>?</span><b>${C.mo.moniker}</b></div>${cl.length?cl.map(card).join(""):`<p class="note">No evidence pinned yet. Process a scene or read an autopsy to start the board.</p>`}</div><div class="sR">${Rh}</div><svg class="strs" aria-hidden="true"></svg></div><div class="panel det">${det}</div>`;
+}
+function drawStrings(){
+  const svg=document.querySelector(".cork svg.strs");if(!svg)return;const R=svg.getBoundingClientRect();
+  const ctr=id=>{const e=document.querySelector("#"+id+" .pn");if(!e)return null;const r=e.getBoundingClientRect();return[r.left+r.width/2-R.left,r.top+r.height/2-R.top]};
+  let h="";LINKS.forEach(l=>{const a=ctr("cl"+l.c),z=ctr("po"+l.s);if(!a||!z)return;const on=!sel||sel==="c"+l.c||sel==="s"+l.s;
+    h+=`<path d="M${a[0].toFixed(1)} ${a[1].toFixed(1)}Q${((a[0]+z[0])/2).toFixed(1)} ${((a[1]+z[1])/2+24).toFixed(1)} ${z[0].toFixed(1)} ${z[1].toFixed(1)}" pathLength="1" class="${l.sure?"":"rep"} ${on?(sel?"hi":""):"lo"} ${l.nw?"draw":""}"/>`;l.nw=false});
+  svg.innerHTML=h;
 }
 function logTab(){
   if(!P.clues.length)return `<p class="empty">The case file is empty. Start with the victims: process a scene, read an autopsy, or find a witness.</p>`;
@@ -531,7 +705,7 @@ function endScreen(){
     :`${C.victims[P.vs[P.vs.length-1]].name} was victim number ${d}. The task force was dissolved that afternoon. The killer was ${k.name}.`;
   const fake=C.letters.filter(l=>!l.genuine).length,real=C.letters.length-fake;
   return `<div class="end"><div class="stamp ${win?"win":"lose"}">${win?"Case closed":"Case lost"}</div><h2>${m.moniker}</h2><p>${lead}</p>
-  <div class="card"><h3>${k.name}</h3><div class="sub">${k.age}, ${k.occ}, ${k.district}. ${TYPES[m.type].label}.</div>
+  <div class="card">${portrait(k,"big")}<h3>${k.name}</h3><div class="sub">${k.age}, ${k.occ}, ${k.district}. ${TYPES[m.type].label}.</div>
   <p>${k.name.split(" ")[0]} ${m.motive}. They chose ${m.vtype}, killed by ${m.method}, and left the same mark every time.</p>
   <dl><dt>Height</dt><dd>${k.height}</dd><dt>Build</dt><dd>${k.build}</dd><dt>Hair</dt><dd>${k.hair}</dd><dt>Shoe size</dt><dd>${k.shoe}</dd><dt>Blood type</dt><dd>${k.blood}</dd><dt>Handed</dt><dd>${k.hand}</dd><dt>Habit</dt><dd>${k.habit}</dd><dt>Vehicle</dt><dd>${k.vehicle}</dd></dl>
   <p class="sub" style="margin:0">Letters in this case: ${real} from the killer, ${fake} from cranks.</p></div>
@@ -544,15 +718,18 @@ function endScreen(){
 function render(){
   const app=document.getElementById("app");
   if(P.over){app.innerHTML=header()+`<div class="wrap"><img class="banner" src="${LOGO}" alt="Murder &amp; Motive">${endScreen()}</div>`;return}
-  const tabs=[["victims",`Victims (${P.vs.length+P.saved.length})`],["suspects","Suspects"],["letters",`Letters (${P.letters.length})`],["log",`Case file (${P.clues.length})`],["board","Leaderboard"],["desk","Desk"]];if(NET.admin)tabs.push(["admin","Admin"]);if(P.tab==="admin"&&!NET.admin)P.tab="desk";
-  const body={victims:victimsTab,suspects:suspectsTab,letters:lettersTab,log:logTab,desk:deskTab,board:boardTab,admin:adminTab}[P.tab]();
+  const tabs=[["victims",`Victims (${P.vs.length+P.saved.length})`],["cork","Board"],["suspects","Suspects"],["letters",`Letters (${P.letters.length})`],["log",`Case file (${P.clues.length})`],["board","Leaderboard"],["desk","Desk"]];if(NET.admin)tabs.push(["admin","Admin"]);if(P.tab==="admin"&&!NET.admin)P.tab="desk";
+  const body={victims:victimsTab,cork:corkTab,suspects:suspectsTab,letters:lettersTab,log:logTab,desk:deskTab,board:boardTab,admin:adminTab}[P.tab]();
   app.innerHTML=header()+`<div class="wrap">${NET.cfg.banner?`<div class="announce">${esc(NET.cfg.banner)}</div>`:""}${P.tab==="victims"?`<img class="banner" src="${LOGO}" alt="Murder &amp; Motive">`:""}${P.notice?`<div class="notice" role="status" data-a="dismiss">${P.notice} <small>(tap to dismiss)</small></div>`:""}
   <div class="layout"><main><div class="tabs" role="tablist">${tabs.map(t=>`<button role="tab" aria-selected="${P.tab===t[0]}" data-a="tab" data-i="${t[0]}">${t[1]}</button>`).join("")}</div>${body}</main>${side()}</div></div>`;
 }
 
 /* ---------- boot ---------- */
+const _render=render;render=function(){_render();requestAnimationFrame(drawStrings)};
+window.addEventListener("resize",drawStrings);window.addEventListener("load",drawStrings);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawStrings);
 const saved=store.get("nta2_game",null);
 if(saved&&saved.P&&typeof saved.seed==="number"){C=generate(saved.seed);P=saved.P;render()}else startCase(newSeed());
+suspectsTab();corkTab();booted=true;
 initNet();
 </script>
 </body>
